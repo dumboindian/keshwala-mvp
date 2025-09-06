@@ -12,7 +12,7 @@ const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   
-  const { user, logout } = useAuth()
+  const { user, loading, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -108,7 +108,12 @@ const Header = () => {
 
           {/* CTA Button & Auth */}
           <div className="hidden lg:flex items-center space-x-4">
-            {user ? (
+            {loading ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-maroon border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-sm text-gray-500">Loading...</span>
+              </div>
+            ) : user ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 text-brown">
                   <User className="w-4 h-4" />

@@ -19,6 +19,12 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Only run on client side and when auth is available
+    if (typeof window === 'undefined' || !auth) {
+      setLoading(false)
+      return
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user)
       setLoading(false)
@@ -28,6 +34,8 @@ export const useAuth = () => {
   }, [])
 
   const signIn = async (email: string, password: string) => {
+    if (!auth) return { success: false, error: 'Authentication not available' }
+    
     try {
       const result = await signInWithEmailAndPassword(auth, email, password)
       return { success: true, user: result.user }
@@ -37,6 +45,8 @@ export const useAuth = () => {
   }
 
   const signUp = async (email: string, password: string, displayName?: string) => {
+    if (!auth) return { success: false, error: 'Authentication not available' }
+    
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password)
       
@@ -52,6 +62,8 @@ export const useAuth = () => {
   }
 
   const signInWithGoogle = async () => {
+    if (!auth) return { success: false, error: 'Authentication not available' }
+    
     try {
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
@@ -62,6 +74,8 @@ export const useAuth = () => {
   }
 
   const resetPassword = async (email: string) => {
+    if (!auth) return { success: false, error: 'Authentication not available' }
+    
     try {
       await sendPasswordResetEmail(auth, email)
       return { success: true, message: 'Password reset email sent!' }
@@ -71,6 +85,8 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
+    if (!auth) return { success: false, error: 'Authentication not available' }
+    
     try {
       await signOut(auth)
       return { success: true }
