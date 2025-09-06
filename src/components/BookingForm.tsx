@@ -53,6 +53,8 @@ const BookingForm = () => {
     setIsSubmitting(true)
     setSubmitError('')
     
+    console.log('Submitting booking:', data)
+    
     try {
       // Add booking to Firebase
       const result = await addBooking({
@@ -61,6 +63,8 @@ const BookingForm = () => {
         createdAt: new Date().toISOString(),
       })
       
+      console.log('Booking result:', result)
+      
       if (result.success) {
         setIsSubmitted(true)
         reset()
@@ -68,6 +72,7 @@ const BookingForm = () => {
         setTimeout(() => setIsSubmitted(false), 5000)
       } else {
         setSubmitError(result.error || 'Failed to submit booking. Please try again.')
+        console.error('Booking failed:', result.error)
       }
     } catch (error) {
       setSubmitError('An unexpected error occurred. Please try again.')

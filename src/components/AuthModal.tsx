@@ -157,7 +157,8 @@ const AuthModal = ({ isOpen, onClose, defaultMode = 'signin' }: AuthModalProps) 
               </motion.div>
             )}
 
-            {/* Google Sign In */}
+            {/* Temporarily disabled Google Sign In - Enable in Firebase Console */}
+            {/* 
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -174,7 +175,6 @@ const AuthModal = ({ isOpen, onClose, defaultMode = 'signin' }: AuthModalProps) 
               Continue with Google
             </motion.button>
 
-            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
@@ -183,6 +183,7 @@ const AuthModal = ({ isOpen, onClose, defaultMode = 'signin' }: AuthModalProps) 
                 <span className="px-2 bg-white text-gray-500">Or continue with email</span>
               </div>
             </div>
+            */}
 
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
