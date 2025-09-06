@@ -26,6 +26,10 @@ export const useFirestore = () => {
   const [loading, setLoading] = useState(false)
 
   const addDocument = async (collectionName: string, data: any) => {
+    if (!db) {
+      return { success: false, error: 'Database not available' }
+    }
+    
     try {
       setLoading(true)
       const docRef = await addDoc(collection(db, collectionName), {
@@ -42,6 +46,10 @@ export const useFirestore = () => {
   }
 
   const getDocuments = async (collectionName: string, constraints?: any[]) => {
+    if (!db) {
+      return { success: false, error: 'Database not available' }
+    }
+    
     try {
       setLoading(true)
       const collectionRef = collection(db, collectionName)
@@ -63,6 +71,10 @@ export const useFirestore = () => {
   }
 
   const updateDocument = async (collectionName: string, docId: string, data: any) => {
+    if (!db) {
+      return { success: false, error: 'Database not available' }
+    }
+    
     try {
       setLoading(true)
       const docRef = doc(db, collectionName, docId)
@@ -79,6 +91,10 @@ export const useFirestore = () => {
   }
 
   const deleteDocument = async (collectionName: string, docId: string) => {
+    if (!db) {
+      return { success: false, error: 'Database not available' }
+    }
+    
     try {
       setLoading(true)
       await deleteDoc(doc(db, collectionName, docId))
@@ -122,12 +138,12 @@ export const useFirestore = () => {
 
   // Firebase Storage functions
   const uploadFile = async (file: File, path: string) => {
+    if (!storage) {
+      return { success: false, error: 'Storage not available' }
+    }
+    
     try {
       setLoading(true)
-      if (!storage) {
-        throw new Error('Storage not initialized')
-      }
-      
       const storageRef = ref(storage, path)
       const snapshot = await uploadBytes(storageRef, file)
       const downloadURL = await getDownloadURL(snapshot.ref)
@@ -141,12 +157,12 @@ export const useFirestore = () => {
   }
 
   const deleteFile = async (path: string) => {
+    if (!storage) {
+      return { success: false, error: 'Storage not available' }
+    }
+    
     try {
       setLoading(true)
-      if (!storage) {
-        throw new Error('Storage not initialized')
-      }
-      
       const storageRef = ref(storage, path)
       await deleteObject(storageRef)
       

@@ -21,11 +21,24 @@ export const useAuth = () => {
   useEffect(() => {
     // Only run on client side and when auth is available
     if (typeof window === 'undefined' || !auth) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('useAuth: Skipping auth initialization -', {
+          isServer: typeof window === 'undefined',
+          authAvailable: !!auth
+        })
+      }
       setLoading(false)
       return
     }
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log('useAuth: Initializing auth state listener')
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('useAuth: Auth state changed -', user ? 'User logged in' : 'No user')
+      }
       setUser(user)
       setLoading(false)
     })
