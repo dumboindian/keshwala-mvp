@@ -8,7 +8,9 @@ import {
   signOut, 
   onAuthStateChanged,
   signInWithPopup,
-  GoogleAuthProvider
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+  updateProfile
 } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 
@@ -34,9 +36,15 @@ export const useAuth = () => {
     }
   }
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, displayName?: string) => {
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password)
+      
+      // Update display name if provided
+      if (displayName && result.user) {
+        await updateProfile(result.user, { displayName })
+      }
+      
       return { success: true, user: result.user }
     } catch (error: any) {
       return { success: false, error: error.message }
@@ -48,6 +56,15 @@ export const useAuth = () => {
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
       return { success: true, user: result.user }
+    } catch (error: any) {
+      return { success: false, error: error.message }
+    }
+  }
+
+  const resetPassword = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email)
+      return { success: true, message: 'Password reset email sent!' }
     } catch (error: any) {
       return { success: false, error: error.message }
     }
@@ -68,6 +85,7 @@ export const useAuth = () => {
     signIn,
     signUp,
     signInWithGoogle,
+    resetPassword,
     logout
   }
 }

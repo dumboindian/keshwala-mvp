@@ -1,12 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Menu, X, Phone, Mail } from 'lucide-react'
+import { Menu, X, Phone, Mail, User, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '@/hooks/useAuth'
+import AuthModal from './AuthModal'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  
+  const { user, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +32,22 @@ const Header = () => {
     { name: 'Blog', href: '#blog' },
     { name: 'Contact', href: '#contact' },
   ]
+
+  const handleAuthClick = (mode: 'signin' | 'signup') => {
+    setAuthMode(mode)
+    setIsAuthModalOpen(true)
+  }
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
+  const scrollToBooking = () => {
+    const bookingSection = document.getElementById('booking')
+    if (bookingSection) {
+      bookingSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
     <motion.header
@@ -84,11 +106,50 @@ const Header = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block">
+          {/* CTA Button & Auth */}
+          <div className="hidden lg:flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 text-brown">
+                  <User className="w-4 h-4" />
+                  <span className="text-sm font-medium">
+                    {user.displayName || user.email?.split('@')[0]}
+                  </span>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1 text-brown hover:text-maroon transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="text-sm">Logout</span>
+                </motion.button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleAuthClick('signin')}
+                  className="text-brown hover:text-maroon font-medium transition-colors"
+                >
+                  Sign In
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleAuthClick('signup')}
+                  className="px-4 py-2 bg-maroon text-white rounded-lg hover:bg-maroon/90 transition-colors text-sm font-medium"
+                >
+                  Sign Up
+                </motion.button>
+              </div>
+            )}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={scrollToBooking}
               className="btn-primary"
             >
               Book Now
@@ -137,6 +198,13 @@ const Header = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultMode={authMode}
+      />
     </motion.header>
   )
 }
