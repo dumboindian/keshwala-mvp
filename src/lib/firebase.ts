@@ -5,14 +5,15 @@ import { getStorage } from 'firebase/storage'
 import { getAnalytics } from 'firebase/analytics'
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyB4IqX2Hd_tdLv2_qes_TdKvWczlqMvqNQ",
+  authDomain: "keshwala-mvp.firebaseapp.com",
+  projectId: "keshwala-mvp",
+  storageBucket: "keshwala-mvp.firebasestorage.app",
+  messagingSenderId: "84416955059",
+  appId: "1:84416955059:web:db71f5972624a46113e6c6",
+  measurementId: "G-500BJCEZFF"
 }
+
 
 // Initialize Firebase (avoid duplicate initialization)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0]
