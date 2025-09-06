@@ -1,27 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Scissors, Sparkles, Crown, Heart, Calendar, Star } from 'lucide-react'
-import { useFirestore } from '@/hooks/useFirestore'
-
-interface Service {
-  id: number | string
-  title: string
-  description: string
-  price: string
-  category: string
-  icon: any
-  image: string
-  features: string[]
-}
 
 const Services = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [services, setServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
-  const { getServices } = useFirestore()
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -35,8 +20,7 @@ const Services = () => {
     { id: 'subscription', name: 'Subscriptions' },
   ]
 
-  // Default services as fallback
-  const defaultServices: Service[] = [
+  const services = [
     {
       id: 1,
       title: 'Hair Cut & Styling',
@@ -99,63 +83,9 @@ const Services = () => {
     },
   ]
 
-  // Load services from Firebase
-  useEffect(() => {
-    const loadServices = async () => {
-      try {
-        const result = await getServices()
-        if (result.success && result.data) {
-          // Map Firebase data to Service interface
-          const mappedServices = result.data.map((service: any) => ({
-            id: service.id,
-            title: service.title || service.name || 'Service',
-            description: service.description || service.desc || '',
-            price: service.price || 'Contact for pricing',
-            category: service.category || 'haircare',
-            icon: Scissors, // Default icon, could be mapped based on category
-            image: service.image || '/api/placeholder/300/200',
-            features: service.features || []
-          }))
-          setServices(mappedServices)
-        } else {
-          console.error('Failed to load services:', result.error)
-          // Fallback to hardcoded services if Firebase fails
-          setServices(defaultServices)
-        }
-      } catch (error) {
-        console.error('Error loading services:', error)
-        setServices(defaultServices)
-      } finally {
-        setLoading(false)
-      }
-    }
-    
-    loadServices()
-  }, [getServices])
-
   const filteredServices = selectedCategory === 'all' 
     ? services 
     : services.filter(service => service.category === selectedCategory)
-
-  if (loading) {
-    return (
-      <section id="services" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-montserrat font-bold text-maroon mb-6">
-              Our Services
-            </h2>
-            <p className="text-lg text-gray max-w-2xl mx-auto">
-              Professional hair and wig services tailored to your needs
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <div className="w-8 h-8 border-4 border-maroon border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        </div>
-      </section>
-    )
-  }
 
   return (
     <section id="services" className="py-20 bg-white">
@@ -170,8 +100,8 @@ const Services = () => {
           <h2 className="text-4xl lg:text-5xl font-montserrat font-bold text-maroon mb-6">
             Our Services
           </h2>
-          <p className="text-lg text-gray max-w-2xl mx-auto">
-            Professional hair and wig services tailored to your needs
+          <p className="text-xl text-gray max-w-3xl mx-auto">
+            Professional hair and wig care services delivered to your doorstep with love and expertise
           </p>
         </motion.div>
 
@@ -189,7 +119,7 @@ const Services = () => {
               className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                 selectedCategory === category.id
                   ? 'bg-maroon text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-pink/30 text-maroon hover:bg-pink/50'
               }`}
             >
               {category.name}
@@ -199,73 +129,84 @@ const Services = () => {
 
         {/* Services Grid */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.4 }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {filteredServices.map((service, index) => {
-            const IconComponent = service.icon
-            return (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-              >
-                <div className="relative h-48 bg-gradient-to-br from-pink to-maroon">
-                  <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <IconComponent className="w-16 h-16 text-white" />
-                  </div>
-                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 rounded-full px-3 py-1">
-                    <span className="text-maroon font-bold text-lg">{service.price}</span>
-                  </div>
+          {filteredServices.map((service, index) => (
+            <motion.div
+              key={service.id}
+              initial={{ opacity: 0, y: 50 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="bg-white rounded-2xl shadow-lg overflow-hidden card-hover group"
+            >
+              {/* Service Image */}
+              <div className="relative h-48 bg-gradient-to-br from-maroon/20 to-pink/20 flex items-center justify-center">
+                <div className="w-16 h-16 bg-maroon/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <service.icon className="w-8 h-8 text-maroon" />
                 </div>
-                
-                <div className="p-6">
-                  <h3 className="text-xl font-montserrat font-bold text-maroon mb-3">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray mb-4 leading-relaxed">
-                    {service.description}
-                  </p>
-                  
-                  <div className="space-y-2 mb-6">
-                    {service.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center text-sm text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-maroon rounded-full mr-3"></div>
-                        {feature}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <button className="w-full bg-gradient-to-r from-pink to-maroon text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-300 group-hover:scale-105">
-                    Book Now
-                  </button>
+                <div className="absolute top-4 right-4 bg-maroon text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  {service.price}
                 </div>
-              </motion.div>
-            )
-          })}
+              </div>
+
+              {/* Service Content */}
+              <div className="p-6">
+                <h3 className="text-xl font-montserrat font-semibold text-maroon mb-3">
+                  {service.title}
+                </h3>
+                <p className="text-gray mb-4 leading-relaxed">
+                  {service.description}
+                </p>
+
+                {/* Features */}
+                <ul className="space-y-2 mb-6">
+                  {service.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center text-sm text-gray">
+                      <div className="w-2 h-2 bg-pink rounded-full mr-3"></div>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full btn-primary group-hover:bg-maroon/90"
+                >
+                  Book Now
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
 
-        {/* Call to Action */}
+        {/* CTA Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.6 }}
           className="text-center mt-16"
         >
-          <h3 className="text-2xl font-montserrat font-bold text-maroon mb-4">
-            Don't see what you're looking for?
-          </h3>
-          <p className="text-gray mb-6 max-w-2xl mx-auto">
-            We offer custom services tailored to your specific needs. Contact us to discuss your requirements.
-          </p>
-          <button className="bg-maroon text-white px-8 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all duration-300">
-            Contact Us
-          </button>
+          <div className="bg-gradient-to-r from-maroon to-pink rounded-2xl p-8 text-white">
+            <h3 className="text-2xl font-montserrat font-bold mb-4">
+              Don't See What You're Looking For?
+            </h3>
+            <p className="text-lg mb-6 opacity-90">
+              We offer custom services tailored to your specific needs. Contact us to discuss your requirements.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white text-maroon px-8 py-3 rounded-lg font-semibold hover:bg-pink transition-colors duration-300"
+            >
+              Contact Us
+            </motion.button>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -273,3 +214,4 @@ const Services = () => {
 }
 
 export default Services
+
